@@ -102,6 +102,12 @@ footer button{background:none;border:0;color:#fff;opacity:.8;text-decoration:und
 @media (max-width:860px){.hero,.about{grid-template-columns:1fr}form{grid-template-columns:1fr}.steps{flex-wrap:wrap}.tools input{max-width:none;margin:0;flex:1 1 100%}}
 @media (max-width:560px){.arrow{display:none}.step{flex-basis:100%}.stats{gap:8px}.stat{padding:10px 6px}.stat span{font-size:13px}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://hbqpvkkiwhxzitqgiyhb.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_ins-rlCS4lpUgpJlc4bqcw_RUwUDBUf";
+  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">

@@ -109,7 +109,16 @@ footer button{background:none;border:0;color:#fff;opacity:.8;text-decoration:und
   const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 </script>
 </head>
-<body>
+  <body>
+    <div id="auth-box" style="max-width:380px;margin:20px auto;padding:20px;border:1px solid #ccc;border-radius:12px;background:#fff;color:#000;font-family:sans-serif;direction:rtl">
+  <h3 id="auth-title">تسجيل الدخول</h3>
+  <input id="auth-email" type="email" placeholder="الإيميل" style="width:100%;padding:10px;margin:6px 0;box-sizing:border-box">
+  <input id="auth-pass" type="password" placeholder="الباسورد" style="width:100%;padding:10px;margin:6px 0;box-sizing:border-box">
+  <button id="btn-login" style="width:100%;padding:10px;margin:6px 0;cursor:pointer">دخول</button>
+  <button id="btn-signup" style="width:100%;padding:10px;margin:6px 0;cursor:pointer">إنشاء حساب</button>
+  <button id="btn-logout" style="width:100%;padding:10px;margin:6px 0;cursor:pointer;display:none">تسجيل خروج</button>
+  <p id="auth-msg" style="margin:8px 0;font-size:14px"></p>
+</div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="lf" viewBox="0 0 64 64"><path d="M6 40C6 22 20 10 34 10c0 18-8 32-26 32z" fill="#1B6B3A"/><path d="M30 54c0-16 10-30 28-32 0 18-10 30-28 32z" fill="#3FAE6A"/><path d="M26 18v38M44 8v14M40 8v12M48 8v12" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/></symbol>
 </svg>
@@ -308,5 +317,44 @@ var secs=["top","find","how","about","share"],links=$$("nav a");
 window.addEventListener("scroll",function(){var y=scrollY+120,cur=0;secs.forEach(function(s,i){var el=document.getElementById(s);if(el&&el.offsetTop<=y)cur=i});links.forEach(function(a,i){a.classList.toggle("on",i===cur)})},{passive:true});
 applyLang();
 </script>
-</body>
+<script>
+  const $a = (id) => document.getElementById(id);
+  const msg = (t) => { $a("auth-msg").textContent = t; };
+
+  function showState(user) {
+    $a("auth-title").textContent = user ? "مسجل دخول: " + user.email : "تسجيل الدخول";
+    $a("auth-email").style.display = user ? "none" : "block";
+    $a("auth-pass").style.display = user ? "none" : "block";
+    $a("btn-login").style.display = user ? "none" : "block";
+    $a("btn-signup").style.display = user ? "none" : "block";
+    $a("btn-logout").style.display = user ? "block" : "none";
+  }
+
+  $a("btn-signup").onclick = async () => {
+    const { error } = await supa.auth.signUp({
+      email: $a("auth-email").value.trim(),
+      password: $a("auth-pass").value
+    });
+    msg(error ? "خطأ: " + error.message : "تم إنشاء الحساب");
+  };
+
+  $a("btn-login").onclick = async () => {
+    const { data, error } = await supa.auth.signInWithPassword({
+      email: $a("auth-email").value.trim(),
+      password: $a("auth-pass").value
+    });
+    if (error) { msg("خطأ: " + error.message); return; }
+    msg("تم تسجيل الدخول");
+    showState(data.user);
+  };
+
+  $a("btn-logout").onclick = async () => {
+    await supa.auth.signOut();
+    msg("تم تسجيل الخروج");
+    showState(null);
+  };
+
+  supa.auth.getSession().then(({ data }) => showState(data.session ? data.session.user : null));
+</script>
+  </body>
 </html>
